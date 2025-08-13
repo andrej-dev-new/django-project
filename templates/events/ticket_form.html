@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+{% block title %}Book Ticket{% endblock %}
+{% block content %}
+<h1>Book Ticket for {{ view.event.title }}</h1>
+<form method="post" class="row g-3">
+  {% csrf_token %}
+  <div class="col-md-6">
+    <label class="form-label">Seat Type</label>
+    {{ form.seat_type|add_class:"form-select" }}
+    {{ form.seat_type.errors }}
+  </div>
+  <div class="col-12">
+    <button class="btn btn-success">Book</button>
+    <a class="btn btn-outline-secondary" href="{{ view.event.get_absolute_url }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

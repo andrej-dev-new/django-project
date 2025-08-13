@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">My Events</div>
+      <div class="card-body">
+        <ul class="list-group">
+          {% for e in my_events %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <a href="{{ e.get_absolute_url }}">{{ e.title }}</a>
+                <span class="text-muted small"> • {{ e.starts_at|date:"M d, Y H:i" }}</span>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <a class="btn btn-outline-primary" href="{% url 'events:edit' e.slug %}">Edit</a>
+                <a class="btn btn-outline-danger" href="{% url 'events:delete' e.slug %}">Delete</a>
+              </div>
+            </li>
+          {% empty %}
+            <li class="list-group-item">No events. <a href="{% url 'events:create' %}">Create one</a>.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">My Tickets</div>
+      <div class="card-body">
+        <ul class="list-group">
+          {% for t in my_tickets %}
+            <li class="list-group-item d-flex justify-content-between">
+              <div>
+                <a href="{{ t.event.get_absolute_url }}">{{ t.event.title }}</a>
+                <span class="text-muted small"> • {{ t.seat_type }} • {{ t.booked_at|date:"M d, Y H:i" }}</span>
+              </div>
+            </li>
+          {% empty %}
+            <li class="list-group-item">No tickets yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">My Reviews</div>
+      <div class="card-body">
+        <ul class="list-group">
+          {% for r in my_reviews %}
+            <li class="list-group-item d-flex justify-content-between">
+              <div><a href="{{ r.event.get_absolute_url }}">{{ r.event.title }}</a> — {{ r.comment|truncatewords:10 }}</div>
+              <span class="badge bg-primary">{{ r.rating }}/5</span>
+            </li>
+          {% empty %}
+            <li class="list-group-item">No reviews written.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">My Favorites</div>
+      <div class="card-body">
+        <ul class="list-group">
+          {% for f in my_favorites %}
+            <li class="list-group-item"><a href="{{ f.event.get_absolute_url }}">{{ f.event.title }}</a></li>
+          {% empty %}
+            <li class="list-group-item">No favorites yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if profile_form %}
+<hr class="my-4">
+<h2 class="h5">Update Profile</h2>
+<form method="post" action="{% url 'accounts:profile_update' %}" class="row g-3">
+  {% csrf_token %}
+  <div class="col-md-6">
+    <label class="form-label">Email</label>
+    {{ profile_form.email|add_class:"form-control" }}
+  </div>
+  <div class="col-md-12">
+    <label class="form-label">Bio</label>
+    {{ profile_form.bio|add_class:"form-control" }}
+  </div>
+  <div class="col-12">
+    <button class="btn btn-primary">Save</button>
+  </div>
+</form>
+{% endif %}
+{% endblock %}

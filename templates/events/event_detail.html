@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+<article class="mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>{{ event.title }}</h1>
+    {% if user == event.owner or user.is_staff %}
+      <div>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'events:edit' event.slug %}">Edit</a>
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'events:delete' event.slug %}">Delete</a>
+      </div>
+    {% endif %}
+  </div>
+  <p class="text-muted">{{ event.category }} • {{ event.starts_at|date:"M d, Y H:i" }} • {{ event.location }}</p>
+  <p>{{ event.description }}</p>
+
+  {% if user.is_authenticated %}
+    <div class="d-flex gap-2 my-3">
+      {% if is_favorite %}
+        <form method="post" action="{% url 'events:favorite_remove' event.slug %}">{% csrf_token %}
+          <button class="btn btn-outline-secondary">♥ Remove Favorite</button>
+        </form>
+      {% else %}
+        <form method="post" action="{% url 'events:favorite_add' event.slug %}">{% csrf_token %}
+          <button class="btn btn-outline-primary">♥ Add Favorite</button>
+        </form>
+      {% endif %}
+
+      {% if not has_ticket and event.tickets_count < event.capacity %}
+        <a class="btn btn-success" href="{% url 'events:ticket_create' event.slug %}">Book Ticket</a>
+      {% else %}
+        <button class="btn btn-secondary" disabled>
+          {% if has_ticket %}You have a ticket{% else %}Sold out{% endif %}
+        </button>
+      {% endif %}
+    </div>
+  {% endif %}
+</article>
+
+<section class="mt-4">
+  <h2 class="h5">Reviews</h2>
+  {% if user.is_authenticated %}
+    {% if my_review %}
+      <div class="alert alert-info">You rated: {{ my_review.rating }}/5 — "{{ my_review.comment|truncatewords:20 }}" 
+        <a class="ms-2" href="{% url 'events:review_edit' my_review.id %}">Edit</a>
+      </div>
+    {% else %}
+      <form class="card card-body mb-3" method="post" action="{% url 'events:review_create' event.slug %}">
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-2">
+            <label class="form-label">Rating</label>
+            {{ review_form.rating|add_class:"form-select" }}
+          </div>
+          <div class="col-md-8">
+            <label class="form-label">Comment</label>
+            {{ review_form.comment|add_class:"form-control" }}
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100">Submit</button>
+          </div>
+        </div>
+      </form>
+    {% endif %}
+  {% else %}
+    <p><a href="{% url 'accounts:login' %}">Login</a> to leave a review.</p>
+  {% endif %}
+
+  <ul class="list-group">
+    {% for r in event.reviews.all %}
+      <li class="list-group-item d-flex justify-content-between">
+        <div><strong>{{ r.user.username }}</strong> — {{ r.comment }} <span class="text-muted small">({{ r.created_at|date:"M d, Y H:i" }})</span></div>
+        <div class="badge bg-primary">{{ r.rating }}/5</div>
+      </li>
+    {% empty %}
+      <li class="list-group-item">No reviews yet.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

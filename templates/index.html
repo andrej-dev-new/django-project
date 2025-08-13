@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}EventHub — Discover Events{% endblock %}
+{% block content %}
+<div class="p-5 rounded-3 hero">
+  <div class="container py-5">
+    <h1 class="display-5 fw-bold">Find your next event</h1>
+    <p class="col-lg-8 fs-5">Create, discover, favorite and review events around you. Built with Django + Bootstrap.</p>
+    <a class="btn btn-primary btn-lg me-2" href="{% url 'events:list' %}">Browse Events</a>
+    {% if not user.is_authenticated %}
+      <a class="btn btn-outline-light btn-lg" href="{% url 'accounts:register' %}">Get Started</a>
+    {% endif %}
+  </div>
+</div>
+<section class="mt-4">
+  <h2 class="h4 mb-3">Why EventHub?</h2>
+  <div class="row g-3">
+    <div class="col-md-4"><div class="card h-100 p-3">🎯 Easy to use and secure.</div></div>
+    <div class="col-md-4"><div class="card h-100 p-3">🛡️ Role-based permissions.</div></div>
+    <div class="col-md-4"><div class="card h-100 p-3">⭐ Reviews & favorites.</div></div>
+  </div>
+</section>
+{% endblock %}

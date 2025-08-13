@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+{% block title %}Review{% endblock %}
+{% block content %}
+<h1>{{ view.object|yesno:"Edit Review,Create Review" }}</h1>
+<form method="post" class="row g-3">
+  {% csrf_token %}
+  <div class="col-md-2">
+    <label class="form-label">Rating</label>
+    {{ form.rating|add_class:"form-select" }}
+    {{ form.rating.errors }}
+  </div>
+  <div class="col-md-10">
+    <label class="form-label">Comment</label>
+    {{ form.comment|add_class:"form-control" }}
+    {{ form.comment.errors }}
+  </div>
+  <div class="col-12">
+    <button class="btn btn-primary">Save</button>
+    <a class="btn btn-outline-secondary" href="{{ view.object.event.get_absolute_url }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

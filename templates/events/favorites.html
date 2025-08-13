@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}My Favorites{% endblock %}
+{% block content %}
+<h1>My Favorites</h1>
+<div class="row g-3">
+  {% for f in favorites %}
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <a class="stretched-link text-decoration-none" href="{{ f.event.get_absolute_url }}"><h5>{{ f.event.title }}</h5></a>
+          <p class="small text-muted">{{ f.event.starts_at|date:"M d, Y H:i" }} • {{ f.event.location }}</p>
+          <p>{{ f.event.description|truncatewords:25 }}</p>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>You have no favorites yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}
